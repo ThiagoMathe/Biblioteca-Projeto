@@ -9,6 +9,18 @@ const Livro = sequelize.define('Livro', {
   autor: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  ano: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  descricao: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  disponivel: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
   }
 }, {
   tableName: 'livros'

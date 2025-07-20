@@ -13,7 +13,7 @@ app.use('/api/livros', livroRoutes);
 sequelize.authenticate()
   .then(() => {
     console.log('🟢 Conectado ao MySQL');
-    return sequelize.sync(); // sincroniza os modelos com o banco (cria tabela se não existir)
+    return sequelize.sync({ alter: true });
   })
   .then(() => {
     app.listen(PORT, () => {
