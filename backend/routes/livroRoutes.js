@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/livroController');
+const services = require('../services/livroServices');
 
-router.get('/', controller.getLivros);
-router.post('/', controller.addLivro);
-router.put('/:id', controller.updateLivro);
-router.delete('/:id', controller.deleteLivro);
+router.get('/', services.getLivros);
+router.post('/', services.addLivro);
+router.put('/:id', services.updateLivro);
+router.delete('/:id', services.deleteLivro);
 
 module.exports = router;
