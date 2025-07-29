@@ -1,4 +1,4 @@
-import { LivroForm } from "../App";
+import { LivroForm } from "../models/livro"; 
 import { api } from "../libs/axios";
 
 export class LivroService {
