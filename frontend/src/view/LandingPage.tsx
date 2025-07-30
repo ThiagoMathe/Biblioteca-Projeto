@@ -1,5 +1,5 @@
 import FeatureCard from "../components/ui/FeatureCard"
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 /* mudar isso */
 const features = [
@@ -26,11 +26,6 @@ const features = [
 ];
 
 export default function LandingPage() {
-    const navigate = useNavigate();
-
-    function handleClick() {
-        navigate('/login'); 
-    }
     return (
         <div className="bg-[#f7fafc] min-h-[calc(100vh-42px)] flex items-center justify-center ">
             <div className="flex flex-col items-center w-full max-w-7xl mx-auto gap-10 px-4">
@@ -49,12 +44,11 @@ export default function LandingPage() {
                             manage your loans with ease. Join our community of passionate readers
                             today!
                         </p>
-                        <button
-                            className="sm:w-[84%] w-full mt-2 p-[0.6rem] bg-[#02697b] rounded-lg text-white"
-                            onClick={handleClick}
+                        <Link to="/auth"
+                            className="sm:w-[84%] w-full mt-2 p-[0.6rem] bg-[#02697b] rounded-lg text-white flex justify-center"
                         >
                             Enter the Digital Library
-                        </button>
+                        </Link>
                     </div>
                 </main>
 
