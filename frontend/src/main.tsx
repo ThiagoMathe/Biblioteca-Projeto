@@ -16,7 +16,9 @@ root.render(
   <StrictMode>
     <BrowserRouter>
       <Header />
-      <App />
+      <div className='min-h-[calc(100vh-53px)] flex flex-col'>
+        <App />
+      </div>
     </BrowserRouter >
   </StrictMode >
 );
