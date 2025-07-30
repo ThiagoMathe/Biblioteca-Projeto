@@ -27,7 +27,7 @@ const features = [
 
 export default function LandingPage() {
     return (
-        <div className="bg-[#f7fafc] min-h-[calc(100vh-42px)] flex items-center justify-center ">
+        <div className="bg-[#f7fafc] flex items-center justify-center flex-grow">
             <div className="flex flex-col items-center w-full max-w-7xl mx-auto gap-10 px-4">
                 <main className="flex items-center gap-4 w-full flex-col sm:flex-row">
                     <img
