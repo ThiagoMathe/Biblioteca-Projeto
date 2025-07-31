@@ -23,11 +23,16 @@ export const useBookManagement = () => {
     dispatch({ type: "SET_CURRENT_PAGE", payload: page });
   };
 
+  /* mudar // get da api */
   const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       setSearchTerm(inputSearchTerm.trim());
     }
   };
+
+  const setModal = (type: "edit" | "add" | null, info: Book | null = null) => {
+    dispatch({ type: "SET_MODAL", payload: { type, info } })
+  }
 
   useEffect(() => {
     const sortedBooks = state.sortConfig
@@ -49,7 +54,6 @@ export const useBookManagement = () => {
           try {
             let res;
             if (state.searchTerm.trim() === "") {
-              console.log("s")
               res = await api.get("/api/livros", {
                 params: { page: state.currentPage }
               });
@@ -73,9 +77,11 @@ export const useBookManagement = () => {
     sortConfig: state.sortConfig,
     currentPage: state.currentPage,
     inputSearchTerm,
+    modal: state.modal,
     setInputSearchTerm,
     setSortConfig,
     setCurrentPage,
     onInputKeyDown,
+    setModal,
   };
 };

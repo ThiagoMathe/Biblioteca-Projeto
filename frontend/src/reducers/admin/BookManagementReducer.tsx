@@ -9,6 +9,10 @@ type BookManagementStateType = {
         direction: "asc" | "desc"
     } | null,
     currentPage: number,
+    modal: {
+        type: "edit" | "add" | null,
+        info: Book | null,
+    }
 }
 
 type BookAction =
@@ -17,13 +21,18 @@ type BookAction =
     | { type: "SET_SEARCH_TERM"; payload: string }
     | { type: "SET_SORT_CONFIG"; payload: { key: keyof Book; direction: "asc" | "desc" } }
     | { type: "SET_CURRENT_PAGE"; payload: number }
+    | { type: "SET_MODAL"; payload: { type: "edit" | "add" | null, info: Book | null } }
 
 export const initialBookManagementState: BookManagementStateType = {
     books: [],
     totalPages: 1,
     searchTerm: "",
     sortConfig: { key: "title", direction: "asc" },
-    currentPage: 1
+    currentPage: 1,
+    modal: {
+        type: null,
+        info: null
+    }
 }
 
 export function BookManagementReducer(state: BookManagementStateType, action: BookAction) {
@@ -38,6 +47,8 @@ export function BookManagementReducer(state: BookManagementStateType, action: Bo
             return { ...state, sortConfig: action.payload }
         case "SET_CURRENT_PAGE":
             return { ...state, currentPage: action.payload }
+        case "SET_MODAL":
+            return { ...state, modal: action.payload }
         default:
             return state
     }
