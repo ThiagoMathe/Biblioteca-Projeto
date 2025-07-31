@@ -20,12 +20,13 @@ export default function BookManagementPage() {
         sortConfig,
         currentPage,
         inputSearchTerm,
+        modal,
         setInputSearchTerm,
         setSortConfig,
         setCurrentPage,
         onInputKeyDown,
+        setModal,
     } = useBookManagement()
-    const [modal, setModal] = useState<boolean>(false)
 
     const renderSortIcon = (key: keyof Book) => {
         if (sortConfig?.key !== key) return null;
@@ -40,15 +41,15 @@ export default function BookManagementPage() {
     return (
         <main className="h-full flex-1 overflow-hidden px-12 py-9 flex flex-col gap-6">
 
-            {modal && (
-                <BookModal close={() => setModal(false)} />
+            {modal.type != null && (
+                <BookModal modal={modal} close={() => setModal(null)} />
             )}
 
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold">Manage Books</h1>
                 <button
                     className="bg-[#ebedf2] rounded-2xl py-1 px-4 font-medium text-sm hover:bg-[#e0e2e8] transition"
-                    onClick={(() => { setModal(true) })}
+                    onClick={(() => { setModal('add') })}
                 >
                     Add Book
                 </button>
@@ -96,13 +97,14 @@ export default function BookManagementPage() {
                     </thead>
                     <tbody>
                         {books.length > 0 ? (
-                            books.map((book, i) => (
+                            books.map((book, i) =>
+                            (
                                 <tr
                                     key={i}
                                     className="border-b border-gray-200 hover:bg-gray-50"
                                 >
                                     <td className="px-4 py-3 font-semibold text-gray-900">
-                                        {book.title}
+                                        {book.title}                                      
                                     </td>
                                     <td className="px-4 py-3 text-blue-600 hover:underline cursor-pointer">
                                         {book.author}
@@ -125,7 +127,7 @@ export default function BookManagementPage() {
                                     </td>
                                     <td className="px-4 py-3 w-44">{book.pubDate}</td>
                                     <td className="px-4 py-3 text-blue-700 font-medium flex gap-1 flex-wrap">
-                                        <button className="hover:underline">Edit</button>|
+                                        <button className="hover:underline" onClick={() => {setModal("edit", book)}}>Edit</button>|
                                         <button className="hover:underline">Remove</button>
                                     </td>
                                 </tr>

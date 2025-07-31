@@ -1,19 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Dropzone from './ui/Dropzone';
+import { Book } from '../models/book';
 
 interface BookModalProps {
+    modal: {
+        type: "add" | "edit" | null,
+        info: Book | null
+    }
     close: Function
 }
 
-export default function BookModal({ close }: BookModalProps) {
+export default function BookModal({ modal, close }: BookModalProps) {
     const [formData, setFormData] = useState({
         title: '',
         author: '',
         genre: '',
         format: '',
-        publicationDate: '',
-        availability: 'Available' as 'Available' | 'Borrowed'
+        pubDate: '',
+        availability: 'Available' as 'Available' | 'Unavailable',
+        imageBase64: '',
     });
+
+    useEffect(() => {
+        if (modal.info != null) {
+            setFormData(modal.info)
+        }
+    }, [modal.info])
 
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -21,40 +33,46 @@ export default function BookModal({ close }: BookModalProps) {
         setFormData((prev) => ({
             ...prev,
             [field]: value,
-            availability: field === 'format' && value !== 'Physic' ? 'Available' : prev.availability
+            ...(field === 'format' && value !== 'Physic' && {
+                availability: 'Available',
+            }),
         }));
     };
 
+
     const validateForm = () => {
-        const today = new Date().toISOString().split('T')[0];
-        const { title, author, genre, format, publicationDate } = formData;
+        const { title, author, genre, format, pubDate } = formData;
 
-        if (!title.trim() || !author.trim() || !genre || !format || !publicationDate) {
-            setErrorMessage('Please fill out all fields before adding a book.');
+        if (!title.trim() || !author.trim() || !genre || !format || !pubDate) {
+            setErrorMessage(`Please fill out all fields before ${modal.type === "add" ? "adding" : "editing"} a book.`);
             return false;
         }
 
-        if (publicationDate > today) {
-            setErrorMessage('Publication date cannot be in the future.');
+        if (modal.info === formData) {
+            setErrorMessage("nenhuma mudança!");
             return false;
         }
-
         setErrorMessage('');
         return true;
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validateForm()) return;
+        if (!validateForm() || modal.type === null) return;
 
-        /* mudar pra api */
-        console.log(formData);
+        if (modal.type === "add") {
+            console.log("add", formData);
+        } else {
+            console.log("edit", formData);
+        }
     };
 
     return (
         <div className='fixed inset-0 bg-black bg-opacity-30 backdrop-blur-[1.5px] flex justify-center items-center z-50'>
             <div className="w-full max-w-2xl p-8 bg-white rounded-xl shadow-lg m-4">
-                <h2 className="text-2xl font-bold ">Add New Book</h2>
+                <h2 className="text-2xl font-bold ">
+                    {modal.type == "add" ? "Add New" : "Edit"} Book
+                </h2>
                 {errorMessage && (
                     <p className="text-sm text-red-600 -mb-6 mt-1">{errorMessage}</p>
                 )}
@@ -121,8 +139,8 @@ export default function BookModal({ close }: BookModalProps) {
                             <input
                                 type="date"
                                 className="w-full border rounded-lg px-4 py-2"
-                                value={formData.publicationDate}
-                                onChange={(e) => handleChange('publicationDate', e.target.value)}
+                                value={formData.pubDate}
+                                onChange={(e) => handleChange('pubDate', e.target.value)}
                                 max={new Date().toISOString().split('T')[0]}
                             />
                         </div>
@@ -147,12 +165,12 @@ export default function BookModal({ close }: BookModalProps) {
                             <label className="flex items-center gap-2">
                                 <input
                                     type="radio"
-                                    value="Borrowed"
-                                    checked={formData.availability === 'Borrowed'}
-                                    onChange={() => handleChange('availability', 'Borrowed')}
+                                    value="Unavailable"
+                                    checked={formData.availability === 'Unavailable'}
+                                    onChange={() => handleChange('availability', 'Unavailable')}
                                     disabled={formData.format !== 'Physic'}
                                 />
-                                Borrowed
+                                Unavailable
                             </label>
                         </div>
                     </div>
@@ -169,7 +187,7 @@ export default function BookModal({ close }: BookModalProps) {
                             type="submit"
                             className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
                         >
-                            Add Book
+                            {modal.type === "add" ? "Add" : "Edit"} Book
                         </button>
                     </div>
                 </form>
