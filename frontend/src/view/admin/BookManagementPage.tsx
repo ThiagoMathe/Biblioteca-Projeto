@@ -37,7 +37,7 @@ export default function BookManagementPage() {
     return (
         <main className="h-full flex-1 overflow-hidden px-12 py-9 flex flex-col gap-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-semibold">Manage Books</h1>
+                <h1 className="text-3xl font-bold">Manage Books</h1>
                 <button className="bg-[#ebedf2] rounded-2xl py-1 px-4 font-medium text-sm hover:bg-[#e0e2e8] transition">
                     Add Book
                 </button>

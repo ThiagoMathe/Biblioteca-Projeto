@@ -19,7 +19,7 @@ export function Sidebar() {
     }, [location])
 
     return (
-        <aside className=" bg-[#fafafa] flex flex-col md:w-[24rem] pl-12 pr-8 pt-10 gap-3 sm:w-full">
+        <aside className=" bg-[#fafafa] flex flex-col  pl-12 pr-8 pt-10 gap-3 min-w-[22rem]">
             {items.map(({ id, label, icon: Icon }) => {
                 const isActive = selected === id
                 return (
