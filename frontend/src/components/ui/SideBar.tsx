@@ -41,7 +41,7 @@ export function Sidebar() {
                     >
                         <div className={"w-6 h-6 flex items-center justify-center"}>
                             <Icon
-                                className="w-4 h-4"
+                                className="w-5 h-5"
                                 stroke={isActive ? 'black' : '#6B7280'}
                                 strokeWidth={2}
                             />

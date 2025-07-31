@@ -44,28 +44,28 @@ export const useBookManagement = () => {
   }, [state.sortConfig])
 
   /* mudar (usar do service) */
-/*     useEffect(() => {
-      const fetchBooks = async () => {
-        try {
-          let res;
-          if (state.searchTerm.trim() === "") {
-            console.log("s")
-            res = await api.get("/api/livros", {
-              params: { page: state.currentPage }
-            });
-          } else {
-            res = await api.get("/api/books/search", {
-              params: { query: state.searchTerm }
-            });
+  /*     useEffect(() => {
+        const fetchBooks = async () => {
+          try {
+            let res;
+            if (state.searchTerm.trim() === "") {
+              console.log("s")
+              res = await api.get("/api/livros", {
+                params: { page: state.currentPage }
+              });
+            } else {
+              res = await api.get("/api/books/search", {
+                params: { query: state.searchTerm }
+              });
+            }
+            dispatch({ type: "SET_BOOKS", payload: res.data.books });
+          } catch (error) {
+            console.error("Error fetching books", error);
           }
-          dispatch({ type: "SET_BOOKS", payload: res.data.books });
-        } catch (error) {
-          console.error("Error fetching books", error);
-        }
-      };
-  
-      fetchBooks();
-    }, [state.currentPage, state.searchTerm]); */
+        };
+    
+        fetchBooks();
+      }, [state.currentPage, state.searchTerm]); */
 
   return {
     books: state.books,
