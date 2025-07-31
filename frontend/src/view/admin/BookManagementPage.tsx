@@ -1,7 +1,8 @@
-import { useState } from "react"
 import { Search, ChevronDown, ChevronUp } from "lucide-react"
 import { useBookManagement } from "../../viewmodels/admin/useBookManagement";
 import { Book } from "../../models/book"
+import { useState } from "react";
+import BookModal from "../../components/BookModal";
 
 const columns: { key: keyof Book; label: string }[] = [
     { key: "title", label: "Title" },
@@ -24,6 +25,7 @@ export default function BookManagementPage() {
         setCurrentPage,
         onInputKeyDown,
     } = useBookManagement()
+    const [modal, setModal] = useState<boolean>(false)
 
     const renderSortIcon = (key: keyof Book) => {
         if (sortConfig?.key !== key) return null;
@@ -34,11 +36,20 @@ export default function BookManagementPage() {
             <ChevronDown size={16} className="inline-block" />
         );
     };
+
     return (
         <main className="h-full flex-1 overflow-hidden px-12 py-9 flex flex-col gap-6">
+
+            {modal && (
+                <BookModal close={() => setModal(false)} />
+            )}
+
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold">Manage Books</h1>
-                <button className="bg-[#ebedf2] rounded-2xl py-1 px-4 font-medium text-sm hover:bg-[#e0e2e8] transition">
+                <button
+                    className="bg-[#ebedf2] rounded-2xl py-1 px-4 font-medium text-sm hover:bg-[#e0e2e8] transition"
+                    onClick={(() => { setModal(true) })}
+                >
                     Add Book
                 </button>
             </div>

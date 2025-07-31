@@ -6,7 +6,6 @@ import AuthMiddleware from './middleware/AuthMiddleware';
 import DashBoardPage from './view/admin/DashBoardPage';
 import BookManagementPage from './view/admin/BookManagementPage';
 
-
 function App() {
   return (
     <Routes>
