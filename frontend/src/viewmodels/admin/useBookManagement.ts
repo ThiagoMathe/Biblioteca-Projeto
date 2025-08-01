@@ -30,23 +30,32 @@ export const useBookManagement = () => {
     }
   };
 
-  const setModal = (type: "edit" | "add" | null, info: Book | null = null) => {
-    dispatch({ type: "SET_MODAL", payload: { type, info } })
+  const setBookFormModal = (type: "edit" | "add" | null, info: Book | null = null) => {
+    dispatch({ type: "SET_BOOK_FORM_MODAL", payload: { type, info } })
   }
 
-  useEffect(() => {
-    const sortedBooks = state.sortConfig
-      ? [...state.books].sort((a, b) => {
-        const aVal = a[state.sortConfig!.key]?.toString().toLowerCase() ?? "";
-        const bVal = b[state.sortConfig!.key]?.toString().toLowerCase() ?? "";
-        if (aVal < bVal) return state.sortConfig!.direction === "asc" ? -1 : 1;
-        if (aVal > bVal) return state.sortConfig!.direction === "asc" ? 1 : -1;
-        return 0;
-      })
-      : state.books;
+  const setRemoveModal = (visible: false | true, id: number | null = null) => {
+    dispatch({ type: "SET_REMOVE_MODAL", payload: { visible, id } })
+  }
 
-    dispatch({ type: "SET_BOOKS", payload: sortedBooks });
-  }, [state.sortConfig])
+  /* mudar aqui */
+  const handleRemove = (id: number) => {
+    console.log("remove:", id)
+  }
+
+  /*   useEffect(() => {
+      const sortedBooks = state.sortConfig
+        ? [...state.books].sort((a, b) => {
+          const aVal = a[state.sortConfig!.key]?.toString().toLowerCase() ?? "";
+          const bVal = b[state.sortConfig!.key]?.toString().toLowerCase() ?? "";
+          if (aVal < bVal) return state.sortConfig!.direction === "asc" ? -1 : 1;
+          if (aVal > bVal) return state.sortConfig!.direction === "asc" ? 1 : -1;
+          return 0;
+        })
+        : state.books;
+  
+      dispatch({ type: "SET_BOOKS", payload: sortedBooks });
+    }, [state.sortConfig]) */
 
   /* mudar (usar do service) */
   /*     useEffect(() => {
@@ -77,11 +86,14 @@ export const useBookManagement = () => {
     sortConfig: state.sortConfig,
     currentPage: state.currentPage,
     inputSearchTerm,
-    modal: state.modal,
+    bookFormModal: state.bookFormModal,
+    removeModal: state.removeModal,
     setInputSearchTerm,
     setSortConfig,
     setCurrentPage,
     onInputKeyDown,
-    setModal,
+    setBookFormModal,
+    setRemoveModal,
+    handleRemove
   };
 };
