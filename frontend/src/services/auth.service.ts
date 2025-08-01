@@ -1,28 +1,74 @@
 import { api } from "../libs/axios";
 
-/* mudar rotas */
+// Tipos para melhor autocompletar
+type LoginParams = {
+  email: string;
+  password: string;
+};
+
+type RegisterParams = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+type AuthResponse = {
+  token: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
+};
+
 export class AuthService {
-  static async login(credentials: { email: string; password: string }) {
+  static async login(credentials: LoginParams): Promise<AuthResponse> {
     try {
-      const res = await api.post("/login", credentials);
-      return res.data;
-    } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(`Login error: ${err.message}`);
-      }
-      throw new Error("Unknown error occurred during login.");
+      // Ajuste para os campos que o backend espera
+      const payload = {
+        email: credentials.email,
+        senha: credentials.password // Conversão para o nome que o backend espera
+      };
+      
+      const res = await api.post("/auth/login", payload);
+      
+      // Armazena o token (opcional)
+      localStorage.setItem('authToken', res.data.token);
+      
+      return {
+        token: res.data.token,
+        user: {
+          id: res.data.usuario.id,
+          name: res.data.usuario.nome,
+          email: res.data.usuario.email
+        }
+      };
+    } catch (err: any) {
+      throw new Error(err.response?.data?.error || "Erro ao fazer login");
     }
   }
 
-  static async register(data: { name: string; email: string; password: string }) {
+  static async register(data: RegisterParams): Promise<AuthResponse> {
     try {
-      const res = await api.post("/register", data);
-      return res.data;
-    } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(`Registration error: ${err.message}`);
-      }
-      throw new Error("Unknown error occurred during registration.");
+      // Ajuste para os campos que o backend espera
+      const payload = {
+        nome: data.name,    // Conversão para "nome"
+        email: data.email,
+        senha: data.password // Conversão para "senha"
+      };
+      
+      const res = await api.post("/auth/registrar", payload); // Rota corrigida
+      
+      return {
+        token: res.data.token,
+        user: {
+          id: res.data.usuario.id,
+          name: res.data.usuario.nome,
+          email: res.data.usuario.email
+        }
+      };
+    } catch (err: any) {
+      throw new Error(err.response?.data?.error || "Erro ao registrar");
     }
   }
 }
