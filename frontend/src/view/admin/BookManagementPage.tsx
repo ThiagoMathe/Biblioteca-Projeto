@@ -1,7 +1,6 @@
 import { Search, ChevronDown, ChevronUp } from "lucide-react"
 import { useBookManagement } from "../../viewmodels/admin/useBookManagement";
 import { Book } from "../../models/book"
-import { useState } from "react";
 import BookModal from "../../components/BookModal";
 
 const columns: { key: keyof Book; label: string }[] = [
@@ -20,13 +19,17 @@ export default function BookManagementPage() {
         sortConfig,
         currentPage,
         inputSearchTerm,
-        modal,
+        bookFormModal,
+        removeModal,
         setInputSearchTerm,
         setSortConfig,
         setCurrentPage,
         onInputKeyDown,
-        setModal,
+        setBookFormModal,
+        setRemoveModal,
+        handleRemove
     } = useBookManagement()
+
 
     const renderSortIcon = (key: keyof Book) => {
         if (sortConfig?.key !== key) return null;
@@ -37,19 +40,17 @@ export default function BookManagementPage() {
             <ChevronDown size={16} className="inline-block" />
         );
     };
-
     return (
         <main className="h-full flex-1 overflow-hidden px-12 py-9 flex flex-col gap-6">
-
-            {modal.type != null && (
-                <BookModal modal={modal} close={() => setModal(null)} />
+            {bookFormModal.type != null && (
+                <BookModal modal={bookFormModal} close={() => setBookFormModal(null)} />
             )}
 
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold">Manage Books</h1>
                 <button
                     className="bg-[#ebedf2] rounded-2xl py-1 px-4 font-medium text-sm hover:bg-[#e0e2e8] transition"
-                    onClick={(() => { setModal('add') })}
+                    onClick={(() => { setBookFormModal('add') })}
                 >
                     Add Book
                 </button>
@@ -104,7 +105,7 @@ export default function BookManagementPage() {
                                     className="border-b border-gray-200 hover:bg-gray-50"
                                 >
                                     <td className="px-4 py-3 font-semibold text-gray-900">
-                                        {book.title}                                      
+                                        {book.title}
                                     </td>
                                     <td className="px-4 py-3 text-blue-600 hover:underline cursor-pointer">
                                         {book.author}
@@ -126,9 +127,43 @@ export default function BookManagementPage() {
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 w-44">{book.pubDate}</td>
-                                    <td className="px-4 py-3 text-blue-700 font-medium flex gap-1 flex-wrap">
-                                        <button className="hover:underline" onClick={() => {setModal("edit", book)}}>Edit</button>|
-                                        <button className="hover:underline">Remove</button>
+                                    <td className="relative px-4 py-3 text-blue-700 font-medium flex gap-1 flex-wrap">
+                                        {removeModal.id === book.id && removeModal.visible ? (
+                                            <div className="absolute flex gap-2 text-blue-700 font-medium flex-wrap">
+                                                <button
+                                                    className="text-gray-600 hover:underline"
+                                                    onClick={() => setRemoveModal(false)}
+                                                >
+                                                    Cancel
+                                                </button>
+                                                |
+                                                <button
+                                                    className="text-red-600 hover:underline"
+                                                    onClick={() => {
+                                                        handleRemove(book.id);
+                                                        setRemoveModal(false);
+                                                    }}
+                                                >
+                                                    Confirm
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex gap-2 flex-wrap ">
+                                                <button
+                                                    className="hover:underline"
+                                                    onClick={() => setBookFormModal("edit", book)}
+                                                >
+                                                    Edit
+                                                </button>
+                                                |
+                                                <button
+                                                    className="hover:underline text-red-600"
+                                                    onClick={() => setRemoveModal(true, book.id)}
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        )}
                                     </td>
                                 </tr>
                             ))
