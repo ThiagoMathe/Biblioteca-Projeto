@@ -1,29 +1,35 @@
-const Usuario = require('../models/usuario');
+const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET, JWT_EXPIRES_IN } = require('../config/config');
 
-exports.registrar = async (req, res) => {
+exports.register = async (req, res) => {
   try {
-    // Debug: Verifique os dados recebidos
-    console.log('Dados de registro:', req.body);
-    
-    const usuario = await Usuario.create(req.body);
-    
+    const user = await User.create(req.body);
+
     // Debug: Verifique o usuário criado (sem a senha)
     console.log('Usuário criado:', {
-      id: usuario.id,
-      nome: usuario.nome,
-      email: usuario.email
+      id: user.id,
+      name: user.name,
+      email: user.email
     });
 
-    res.status(201).json({
-      id: usuario.id,
-      nome: usuario.nome,
-      email: usuario.email
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN || '1h' }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email
+      }
     });
   } catch (err) {
     console.error('Erro no registro:', err);
-    
+
     if (err.name === 'SequelizeUniqueConstraintError') {
       res.status(400).json({ error: 'Email já está em uso' });
     } else {
@@ -34,30 +40,30 @@ exports.registrar = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, senha } = req.body;
-    
+    const { email, password } = req.body;
+
     // Debug: Verifique os dados de login recebidos
     console.log('Tentativa de login:', { email });
 
-    const usuario = await Usuario.findOne({ where: { email } });
-    
-    if (!usuario) {
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
       console.log('Usuário não encontrado');
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
     // Debug: Verifique a comparação de senhas
     console.log('Comparando senha para:', email);
-    const senhaValida = usuario.verificarSenha(senha);
-    console.log('Resultado da comparação:', senhaValida);
+    const validPassword = user.verifyPassword(password);
+    console.log('Resultado da comparação:', validPassword);
 
-    if (!senhaValida) {
+    if (!validPassword) {
       console.log('Senha inválida');
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
     const token = jwt.sign(
-      { id: usuario.id, email: usuario.email },
+      { id: user.id, email: user.email },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN || '1h' }
     );
@@ -67,10 +73,10 @@ exports.login = async (req, res) => {
 
     res.json({
       token,
-      usuario: {
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email
       }
     });
   } catch (err) {
