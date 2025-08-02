@@ -1,12 +1,13 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import Cookies from 'js-cookie'
 import { Sidebar } from '../components/ui/SideBar'
 
 const AuthMiddleware = () => {
-    const token = Cookies.get('token')
-    /*  MUDAR! MELHORAR GESTÃO DO TOKEN! */
-    if (token) {
-        return <Navigate to="/auth" />
+    const location = useLocation()
+    const token = Cookies.get('authToken')
+
+    if (!token) {
+        return <Navigate to="/auth" state={{ from: location }} replace />
     }
 
     return (
