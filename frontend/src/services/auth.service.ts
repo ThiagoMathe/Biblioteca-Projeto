@@ -1,6 +1,5 @@
 import { api } from "../libs/axios";
 
-// Tipos para melhor autocompletar
 type LoginParams = {
   email: string;
   password: string;
@@ -24,15 +23,13 @@ type AuthResponse = {
 export class AuthService {
   static async login(credentials: LoginParams): Promise<AuthResponse> {
     try {
-      // Ajuste para os campos que o backend espera
       const payload = {
         email: credentials.email,
-        senha: credentials.password // Conversão para o nome que o backend espera
+        senha: credentials.password
       };
       
-      const res = await api.post("/auth/login", payload);
+      const res = await api.post("/api/auth/login", payload);
       
-      // Armazena o token (opcional)
       localStorage.setItem('authToken', res.data.token);
       
       return {
@@ -50,14 +47,13 @@ export class AuthService {
 
   static async register(data: RegisterParams): Promise<AuthResponse> {
     try {
-      // Ajuste para os campos que o backend espera
       const payload = {
-        nome: data.name,    // Conversão para "nome"
+        nome: data.name,   
         email: data.email,
-        senha: data.password // Conversão para "senha"
+        senha: data.password 
       };
       
-      const res = await api.post("/auth/registrar", payload); // Rota corrigida
+      const res = await api.post("/api/auth/registrar", payload); 
       
       return {
         token: res.data.token,
