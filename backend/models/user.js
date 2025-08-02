@@ -2,8 +2,8 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const bcrypt = require('bcryptjs');
 
-const Usuario = sequelize.define('Usuario', {
-  nome: {
+const User = sequelize.define('User', {
+  name: {
     type: DataTypes.STRING,
     allowNull: false
   },
@@ -15,22 +15,22 @@ const Usuario = sequelize.define('Usuario', {
       isEmail: true
     }
   },
-  senha: {
+  password: {
     type: DataTypes.STRING,
     allowNull: false,
     set(value) {
       // Hash da senha antes de salvar
       const hash = bcrypt.hashSync(value, 10);
-      this.setDataValue('senha', hash);
+      this.setDataValue('password', hash);
     }
   }
 }, {
-  tableName: 'usuarios'
+  tableName: 'users'
 });
 
 // Método para verificar senha
-Usuario.prototype.verificarSenha = function(senha) {
-  return bcrypt.compareSync(senha, this.senha);
+User.prototype.verifyPassword = function(password) {
+  return bcrypt.compareSync(password, this.password);
 };
 
-module.exports = Usuario;
+module.exports = User;

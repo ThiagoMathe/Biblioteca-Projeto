@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { api } from "../libs/axios";
 
 type LoginParams = {
@@ -25,46 +26,49 @@ export class AuthService {
     try {
       const payload = {
         email: credentials.email,
-        senha: credentials.password
+        password: credentials.password // Conversão para o nome que o backend espera
       };
-      
-      const res = await api.post("/api/auth/login", payload);
-      
-      localStorage.setItem('authToken', res.data.token);
-      
+
+      const res = await api.post("/auth/login", payload);
+      // Armazena o token
+      Cookies.set("authToken", res.data.token)
+
       return {
         token: res.data.token,
         user: {
-          id: res.data.usuario.id,
-          name: res.data.usuario.nome,
-          email: res.data.usuario.email
+          id: res.data.user.id,
+          name: res.data.user.name,
+          email: res.data.user.email
         }
       };
     } catch (err: any) {
-      throw new Error(err.response?.data?.error || "Erro ao fazer login");
+      throw new Error(err.response?.data?.error || "Login failed");
     }
   }
 
   static async register(data: RegisterParams): Promise<AuthResponse> {
     try {
       const payload = {
-        nome: data.name,   
+        name: data.name,    // Conversão para "nome"
         email: data.email,
-        senha: data.password 
+        password: data.password // Conversão para "senha"
       };
-      
-      const res = await api.post("/api/auth/registrar", payload); 
-      
+
+      const res = await api.post("/auth/register", payload);
+
+      Cookies.set("authToken", res.data.token)
+
+
       return {
         token: res.data.token,
         user: {
-          id: res.data.usuario.id,
-          name: res.data.usuario.nome,
-          email: res.data.usuario.email
+          id: res.data.user.id,
+          name: res.data.user.name,
+          email: res.data.user.email
         }
       };
     } catch (err: any) {
-      throw new Error(err.response?.data?.error || "Erro ao registrar");
+      throw new Error(err.response?.data?.error || "Register failed");
     }
   }
 }

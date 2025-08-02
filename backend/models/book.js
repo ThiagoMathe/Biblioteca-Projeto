@@ -1,29 +1,29 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Livro = sequelize.define('Livro', {
-  titulo: {
+const Book = sequelize.define('Book', {
+  title: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  autor: {
+  author: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  ano: {
+  year: {
     type: DataTypes.INTEGER,
     allowNull: true
   },
-  descricao: {
+  description: {
     type: DataTypes.TEXT,
     allowNull: true
   },
-  disponivel: {
+  available: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
   }
 }, {
-  tableName: 'livros'
+  tableName: 'book'
 });
 
-module.exports = Livro;
+module.exports = Book;
