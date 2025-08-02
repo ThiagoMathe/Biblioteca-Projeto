@@ -57,7 +57,8 @@ export class AuthService {
       const res = await api.post("/auth/register", payload);
 
       Cookies.set("authToken", res.data.token)
-      
+
+
       return {
         token: res.data.token,
         user: {
