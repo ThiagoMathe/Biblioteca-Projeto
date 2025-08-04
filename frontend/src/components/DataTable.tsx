@@ -78,10 +78,10 @@ export function DataTable<T extends object>({
 
     return (
         <section
-            aria-label="Book table"
+            aria-label="table"
             className="flex-1 overflow-auto rounded-lg border border-gray-200"
         >
-            <table className="w-full border-collapse table-auto text-sm text-left text-gray-500 flex-1 overflow-auto  border-gray-200">
+            <table className="w-full border-collapse table-auto text-sm text-left text-gray-500 border-gray-200">
                 <thead className="bg-gray-100 text-gray-700 font-semibold sticky top-0 z-10">
                     <tr>
                         {columns.map(({ key, label }) => (
