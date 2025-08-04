@@ -23,13 +23,21 @@ const User = sequelize.define('User', {
       const hash = bcrypt.hashSync(value, 10);
       this.setDataValue('password', hash);
     }
+  },
+   status: {
+    type: DataTypes.ENUM('Active', 'Inactive'),
+    allowNull: false,
+    defaultValue: 'Active',
   }
 }, {
-  tableName: 'users'
+  tableName: 'users',
+  timestamps: true,
+  createdAt: 'joinedDate',
+  updatedAt: false,
 });
 
 // Método para verificar senha
-User.prototype.verifyPassword = function(password) {
+User.prototype.verifyPassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 

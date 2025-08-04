@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const bookService = require('../services/bookServices');
+const bookService = require('../services/bookService');
 
 router.get('/', bookService.get);
 router.get('/search', bookService.search);

@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react'
 const items = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'book-management', label: 'Book Management', icon: Book },
-    { id: 'users-managament', label: 'User Management', icon: Users },
-    { id: 'borrow-historiy', label: 'Borrow History', icon: History },
+    { id: 'user-management', label: 'User Management', icon: Users },
+    { id: 'borrow-history', label: 'Borrow History', icon: History },
 ]
 
 export function Sidebar() {

@@ -5,6 +5,7 @@ import AuthPage from './view/AuthPage';
 import AuthMiddleware from './middleware/AuthMiddleware';
 import DashBoardPage from './view/admin/DashBoardPage';
 import BookManagementPage from './view/admin/BookManagementPage';
+import UserManagementPage from './view/admin/UserManagementPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route element={<AuthMiddleware />}>
         <Route path="/dashboard" element={<DashBoardPage />} />
         <Route path="/book-management" element={<BookManagementPage />} />
+        <Route path="/user-management" element={<UserManagementPage />} />
       </Route>
     </Routes>
   )

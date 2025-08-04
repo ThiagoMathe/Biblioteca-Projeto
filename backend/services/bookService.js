@@ -32,7 +32,7 @@ exports.search = async (req, res) => {
     }
 
     const searchTerm = `%${query}%`;
-
+    /* mudar: usar op */
     const books = await Book.findAll({
       where: sequelize.literal(
         `title LIKE '${searchTerm}' OR author LIKE '${searchTerm}' OR genre LIKE '${searchTerm}'`
