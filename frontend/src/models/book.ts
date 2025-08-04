@@ -1,10 +1,11 @@
 export interface Book {
   id: number
   title: string
+  description: string
   author: string
   genre: string
-  format: "Hybrid" | "Digital" | "Physic"
-  availability: "Available" | "Unavailable"
+  format: "Hybrid" | "Digital" | "Physic" | ""
+  availability: true | false
   pubDate: string
   imageBase64: string
 }

@@ -20,17 +20,17 @@ export default function BookManagementPage() {
         currentPage,
         inputSearchTerm,
         bookFormModal,
-        removeModal,
+        removeBook,
         setInputSearchTerm,
         setSortConfig,
         setCurrentPage,
         onInputKeyDown,
         setBookFormModal,
-        setRemoveModal,
+        applyBookChange ,
+        setRemoveBook,
         handleRemove
     } = useBookManagement()
-
-
+    
     const renderSortIcon = (key: keyof Book) => {
         if (sortConfig?.key !== key) return null;
 
@@ -43,7 +43,7 @@ export default function BookManagementPage() {
     return (
         <main className="h-full flex-1 overflow-hidden px-12 py-9 flex flex-col gap-6">
             {bookFormModal.type != null && (
-                <BookModal modal={bookFormModal} close={() => setBookFormModal(null)} />
+                <BookModal modal={bookFormModal} close={() => setBookFormModal(null)} bookChange={applyBookChange}/>
             )}
 
             <div className="flex justify-between items-center">
@@ -97,7 +97,7 @@ export default function BookManagementPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {books.length > 0 ? (
+                        {books?.length > 0 ? (
                             books.map((book, i) =>
                             (
                                 <tr
@@ -118,21 +118,21 @@ export default function BookManagementPage() {
                                     </td>
                                     <td className="px-4 py-3">
                                         <span
-                                            className={`inline-block rounded-full px-3 py-1 text-xs font-semibold w-24 text-center ${book.availability === "Available"
+                                            className={`inline-block rounded-full px-3 py-1 text-xs font-semibold w-24 text-center ${book.availability
                                                 ? "bg-green-200 text-green-800"
                                                 : "bg-red-200 text-red-800"
                                                 }`}
                                         >
-                                            {book.availability}
+                                            {book.availability ? "Available" : "Unavailable"}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 w-44">{book.pubDate}</td>
                                     <td className="relative px-4 py-3 text-blue-700 font-medium flex gap-1 flex-wrap">
-                                        {removeModal.id === book.id && removeModal.visible ? (
+                                        {removeBook.id === book.id && removeBook.visible ? (
                                             <div className="absolute flex gap-2 text-blue-700 font-medium flex-wrap">
                                                 <button
                                                     className="text-gray-600 hover:underline"
-                                                    onClick={() => setRemoveModal(false)}
+                                                    onClick={() => setRemoveBook(false)}
                                                 >
                                                     Cancel
                                                 </button>
@@ -141,7 +141,7 @@ export default function BookManagementPage() {
                                                     className="text-red-600 hover:underline"
                                                     onClick={() => {
                                                         handleRemove(book.id);
-                                                        setRemoveModal(false);
+                                                        setRemoveBook(false);
                                                     }}
                                                 >
                                                     Confirm
@@ -158,7 +158,7 @@ export default function BookManagementPage() {
                                                 |
                                                 <button
                                                     className="hover:underline text-red-600"
-                                                    onClick={() => setRemoveModal(true, book.id)}
+                                                    onClick={() => setRemoveBook(true, book.id)}
                                                 >
                                                     Remove
                                                 </button>

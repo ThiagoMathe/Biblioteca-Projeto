@@ -22,9 +22,11 @@ exports.update = async (req, res) => {
   try {
     const { id } = req.params;
     const book = await Book.findByPk(id);
+
     if (!book) return res.status(404).json({ message: 'Livro não encontrado' });
 
-    await book.update(req.body);
+    const teste = await book.update(req.body);
+    console.log(teste)
     res.json(book);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao atualizar livro' });
@@ -35,10 +37,11 @@ exports.delete = async (req, res) => {
   try {
     const { id } = req.params;
     const book = await Book.findByPk(id);
+
     if (!book) return res.status(404).json({ message: 'Livro não encontrado' });
 
     await book.destroy();
-    res.status(204).send();
+    res.json(book);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao deletar livro' });
   }

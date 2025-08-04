@@ -30,7 +30,7 @@ export class AuthService {
       };
 
       const res = await api.post("/api/auth/login", payload);
-      console.log(res)
+
       // Armazena o token
       Cookies.set("authToken", res.data.token)
 
