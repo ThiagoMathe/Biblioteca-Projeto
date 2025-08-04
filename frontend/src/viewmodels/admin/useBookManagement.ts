@@ -1,7 +1,6 @@
 import { useEffect, useReducer, useState } from "react";
 import { BookManagementReducer, initialBookManagementState } from "../../reducers/admin/BookManagementReducer";
 import { Book } from "../../models/book";
-import { api } from "../../libs/axios";
 import { BookService } from "../../services/book.service";
 import Swal from "sweetalert2";
 
@@ -10,14 +9,6 @@ export const useBookManagement = () => {
   const [inputSearchTerm, setInputSearchTerm] = useState("");
 
   // SETTERS
-  const setSortConfig = (key: keyof Book) => {
-    let direction: "asc" | "desc" = "asc";
-    if (state.sortConfig?.key === key && state.sortConfig.direction === "asc") {
-      direction = "desc";
-    }
-    dispatch({ type: "SET_SORT_CONFIG", payload: { key, direction } });
-  };
-
   const setCurrentPage = (page: number) => {
     dispatch({ type: "SET_CURRENT_PAGE", payload: page });
   };
@@ -69,20 +60,6 @@ export const useBookManagement = () => {
   };
 
   useEffect(() => {
-    const sortedBooks = state.sortConfig
-      ? [...state.books].sort((a, b) => {
-        const aVal = a[state.sortConfig!.key]?.toString().toLowerCase() ?? "";
-        const bVal = b[state.sortConfig!.key]?.toString().toLowerCase() ?? "";
-        if (aVal < bVal) return state.sortConfig!.direction === "asc" ? -1 : 1;
-        if (aVal > bVal) return state.sortConfig!.direction === "asc" ? 1 : -1;
-        return 0;
-      })
-      : state.books;
-
-    dispatch({ type: "SET_BOOKS", payload: sortedBooks });
-  }, [state.sortConfig]);
-
-  useEffect(() => {
     const fetchBooks = async () => {
       try {
         let books: Book[];
@@ -105,7 +82,6 @@ export const useBookManagement = () => {
     state: {
       books: state.books,
       totalPages: state.totalPages,
-      sortConfig: state.sortConfig,
       currentPage: state.currentPage,
       inputSearchTerm,
       bookFormModal: state.bookFormModal,
@@ -113,7 +89,6 @@ export const useBookManagement = () => {
     },
     setters: {
       setInputSearchTerm,
-      setSortConfig,
       setCurrentPage,
       setBookFormModal,
       setRemoveConfirmation,
