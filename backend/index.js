@@ -20,7 +20,7 @@ app.use('/api/auth', authRoutes);
 sequelize.authenticate()
   .then(() => {
     console.log('🟢 Conectado ao MySQL');
-    return sequelize.sync({ alter: true });
+    return sequelize.sync();
   })
   .then(() => {
     app.listen(PORT, () => {
