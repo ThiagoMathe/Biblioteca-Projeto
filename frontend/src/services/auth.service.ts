@@ -29,7 +29,8 @@ export class AuthService {
         password: credentials.password // Conversão para o nome que o backend espera
       };
 
-      const res = await api.post("/auth/login", payload);
+      const res = await api.post("/api/auth/login", payload);
+
       // Armazena o token
       Cookies.set("authToken", res.data.token)
 
@@ -54,7 +55,7 @@ export class AuthService {
         password: data.password // Conversão para "senha"
       };
 
-      const res = await api.post("/auth/register", payload);
+      const res = await api.post("/api/auth/register", payload);
 
       Cookies.set("authToken", res.data.token)
 

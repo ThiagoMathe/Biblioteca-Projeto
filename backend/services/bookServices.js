@@ -1,10 +1,47 @@
 const Book = require('../models/book');
+const sequelize = require('../config/database');
 
 exports.get = async (req, res) => {
   try {
-    const books = await Book.findAll();
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const offset = (page - 1) * limit;
+
+    const { rows: books, count: totalItems } = await Book.findAndCountAll({
+      limit,
+      offset,
+      order: [['id', 'DESC']],
+    });
+
+    res.json({
+      books,
+      totalPages: Math.ceil(totalItems / limit),
+    });
+  } catch (err) {
+    console.error('Erro ao buscar livros com paginação:', err);
+    res.status(500).json({ error: 'Erro ao buscar livros' });
+  }
+};
+
+exports.search = async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query || query.trim() === '') {
+      return res.json([]);
+    }
+
+    const searchTerm = `%${query}%`;
+
+    const books = await Book.findAll({
+      where: sequelize.literal(
+        `title LIKE '${searchTerm}' OR author LIKE '${searchTerm}' OR genre LIKE '${searchTerm}'`
+      )
+    });
+
     res.json(books);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Erro ao buscar livros' });
   }
 };
@@ -22,9 +59,11 @@ exports.update = async (req, res) => {
   try {
     const { id } = req.params;
     const book = await Book.findByPk(id);
+
     if (!book) return res.status(404).json({ message: 'Livro não encontrado' });
 
-    await book.update(req.body);
+    const teste = await book.update(req.body);
+
     res.json(book);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao atualizar livro' });
@@ -35,10 +74,11 @@ exports.delete = async (req, res) => {
   try {
     const { id } = req.params;
     const book = await Book.findByPk(id);
+
     if (!book) return res.status(404).json({ message: 'Livro não encontrado' });
 
     await book.destroy();
-    res.status(204).send();
+    res.json(book);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao deletar livro' });
   }

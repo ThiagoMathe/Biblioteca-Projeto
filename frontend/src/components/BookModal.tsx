@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import Dropzone from './ui/Dropzone';
 import { Book } from '../models/book';
+import { BookService } from '../services/book.service';
+import Swal from 'sweetalert2';
 
 interface BookModalProps {
     modal: {
@@ -8,16 +10,19 @@ interface BookModalProps {
         info: Book | null
     }
     close: Function
+    bookChange: (book: Book) => void
 }
 
-export default function BookModal({ modal, close }: BookModalProps) {
-    const [formData, setFormData] = useState({
+export default function BookModal({ modal, close, bookChange }: BookModalProps) {
+    const [formData, setFormData] = useState<Book>({
+        id: -1,
         title: '',
+        description: '',
         author: '',
         genre: '',
-        format: '',
+        format: "",
         pubDate: '',
-        availability: 'Available' as 'Available' | 'Unavailable',
+        availability: true,
         imageBase64: '',
     });
 
@@ -30,15 +35,19 @@ export default function BookModal({ modal, close }: BookModalProps) {
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleChange = (field: keyof typeof formData, value: string) => {
-        setFormData((prev) => ({
-            ...prev,
-            [field]: value,
-            ...(field === 'format' && value !== 'Physic' && {
-                availability: 'Available',
-            }),
-        }));
-    };
+        setFormData((prev) => {
+            const updated = {
+                ...prev,
+                [field]: field === 'availability' ? value === 'true' : value,
+            };
 
+            if (field === 'format' && value !== 'Physic') {
+                updated.availability = true;
+            }
+
+            return updated;
+        });
+    };
 
     const validateForm = () => {
         const { title, author, genre, format, pubDate } = formData;
@@ -56,14 +65,39 @@ export default function BookModal({ modal, close }: BookModalProps) {
         return true;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm() || modal.type === null) return;
 
-        if (modal.type === "add") {
-            console.log("add", formData);
-        } else {
-            console.log("edit", formData);
+        const isAdd = modal.type === "add";
+        const successMsg = isAdd ? 'The book was successfully added.' : 'The book was successfully updated.';
+        const errorMsg = isAdd ? 'Failed to add the book.' : 'Failed to update the book.';
+
+        let res: Book | null = null;
+        try {
+            if (isAdd) {
+                const { id, ...formDataWithoutId } = formData
+                res = await BookService.add(formDataWithoutId);
+            } else {
+                res = await BookService.update(formData);
+            }
+            if (res) bookChange(res);
+
+            Swal.fire({
+                icon: 'success',
+                title: isAdd ? 'Added!' : 'Updated!',
+                text: successMsg,
+                showConfirmButton: false,
+                timer: 2000,
+            });
+
+            close();
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: errorMsg,
+            });
         }
     };
 
@@ -86,6 +120,14 @@ export default function BookModal({ modal, close }: BookModalProps) {
                             className="w-full border rounded-lg px-4 py-2"
                             value={formData.title}
                             onChange={(e) => handleChange('title', e.target.value)}
+                        />
+                        <label className="block mb-1 font-medium">Description</label>
+                        <textarea
+                            placeholder="Book description"
+                            className="w-full border rounded-lg px-4 py-2 resize-none h-20 "
+                            value={formData.description}
+                            onChange={(e) => handleChange('description', e.target.value)}
+                            rows={3}
                         />
                     </div>
 
@@ -154,9 +196,9 @@ export default function BookModal({ modal, close }: BookModalProps) {
                             <label className="flex items-center gap-2">
                                 <input
                                     type="radio"
-                                    value="Available"
-                                    checked={formData.availability === 'Available'}
-                                    onChange={() => handleChange('availability', 'Available')}
+                                    value="true"
+                                    checked={formData.availability === true}
+                                    onChange={() => handleChange('availability', 'true')}
                                     disabled={formData.format !== 'Physic'}
                                 />
                                 Available
@@ -165,9 +207,9 @@ export default function BookModal({ modal, close }: BookModalProps) {
                             <label className="flex items-center gap-2">
                                 <input
                                     type="radio"
-                                    value="Unavailable"
-                                    checked={formData.availability === 'Unavailable'}
-                                    onChange={() => handleChange('availability', 'Unavailable')}
+                                    value="false"
+                                    checked={formData.availability === false}
+                                    onChange={() => handleChange('availability', 'false')}
                                     disabled={formData.format !== 'Physic'}
                                 />
                                 Unavailable

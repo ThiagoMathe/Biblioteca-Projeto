@@ -6,22 +6,34 @@ const Book = sequelize.define('Book', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  author: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  year: {
-    type: DataTypes.INTEGER,
-    allowNull: true
-  },
   description: {
     type: DataTypes.TEXT,
     allowNull: true
   },
-  available: {
+  author: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  genre: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  format: {
+    type: DataTypes.ENUM("Physic", "Digital", "Hybrid"),
+    allowNull: false
+  },
+  pubDate: {
+    type: DataTypes.DATEONLY,
+    allowNull: true
+  },
+  availability: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
-  }
+  },
+  imageBase64: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
 }, {
   tableName: 'book'
 });

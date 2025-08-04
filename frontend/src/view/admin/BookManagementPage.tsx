@@ -14,22 +14,10 @@ const columns: { key: keyof Book; label: string }[] = [
 
 export default function BookManagementPage() {
     const {
-        books,
-        totalPages,
-        sortConfig,
-        currentPage,
-        inputSearchTerm,
-        bookFormModal,
-        removeModal,
-        setInputSearchTerm,
-        setSortConfig,
-        setCurrentPage,
-        onInputKeyDown,
-        setBookFormModal,
-        setRemoveModal,
-        handleRemove
-    } = useBookManagement()
-
+        state: { books, totalPages, currentPage, sortConfig, inputSearchTerm, bookFormModal, removeConfirmation },
+        setters: { setInputSearchTerm, setSortConfig, setCurrentPage, setBookFormModal, setRemoveConfirmation },
+        handlers: { onInputKeyUp, applyBookChange, removeBook },
+    } = useBookManagement();
 
     const renderSortIcon = (key: keyof Book) => {
         if (sortConfig?.key !== key) return null;
@@ -40,10 +28,11 @@ export default function BookManagementPage() {
             <ChevronDown size={16} className="inline-block" />
         );
     };
+
     return (
         <main className="h-full flex-1 overflow-hidden px-12 py-9 flex flex-col gap-6">
             {bookFormModal.type != null && (
-                <BookModal modal={bookFormModal} close={() => setBookFormModal(null)} />
+                <BookModal modal={bookFormModal} close={() => setBookFormModal(null)} bookChange={applyBookChange} />
             )}
 
             <div className="flex justify-between items-center">
@@ -64,7 +53,7 @@ export default function BookManagementPage() {
                     placeholder="Search by title, author or genre"
                     value={inputSearchTerm}
                     onChange={(e) => setInputSearchTerm(e.target.value)}
-                    onKeyDown={onInputKeyDown}
+                    onKeyUp={onInputKeyUp}
                     className="flex-grow p-2 pl-10 border border-[#dee0e5] text-[#10151a] placeholder:text-[#5C738A] bg-[#ebedf2] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
 
@@ -97,7 +86,7 @@ export default function BookManagementPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {books.length > 0 ? (
+                        {books?.length > 0 ? (
                             books.map((book, i) =>
                             (
                                 <tr
@@ -118,21 +107,21 @@ export default function BookManagementPage() {
                                     </td>
                                     <td className="px-4 py-3">
                                         <span
-                                            className={`inline-block rounded-full px-3 py-1 text-xs font-semibold w-24 text-center ${book.availability === "Available"
+                                            className={`inline-block rounded-full px-3 py-1 text-xs font-semibold w-24 text-center ${book.availability
                                                 ? "bg-green-200 text-green-800"
                                                 : "bg-red-200 text-red-800"
                                                 }`}
                                         >
-                                            {book.availability}
+                                            {book.availability ? "Available" : "Unavailable"}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3 w-44">{book.pubDate}</td>
                                     <td className="relative px-4 py-3 text-blue-700 font-medium flex gap-1 flex-wrap">
-                                        {removeModal.id === book.id && removeModal.visible ? (
+                                        {removeConfirmation.id === book.id && removeConfirmation.visible ? (
                                             <div className="absolute flex gap-2 text-blue-700 font-medium flex-wrap">
                                                 <button
                                                     className="text-gray-600 hover:underline"
-                                                    onClick={() => setRemoveModal(false)}
+                                                    onClick={() => setRemoveConfirmation(false)}
                                                 >
                                                     Cancel
                                                 </button>
@@ -140,8 +129,7 @@ export default function BookManagementPage() {
                                                 <button
                                                     className="text-red-600 hover:underline"
                                                     onClick={() => {
-                                                        handleRemove(book.id);
-                                                        setRemoveModal(false);
+                                                        removeBook(book.id);
                                                     }}
                                                 >
                                                     Confirm
@@ -158,7 +146,7 @@ export default function BookManagementPage() {
                                                 |
                                                 <button
                                                     className="hover:underline text-red-600"
-                                                    onClick={() => setRemoveModal(true, book.id)}
+                                                    onClick={() => setRemoveConfirmation(true, book.id)}
                                                 >
                                                     Remove
                                                 </button>

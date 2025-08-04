@@ -2,15 +2,14 @@ import { useEffect, useReducer, useState } from "react";
 import { BookManagementReducer, initialBookManagementState } from "../../reducers/admin/BookManagementReducer";
 import { Book } from "../../models/book";
 import { api } from "../../libs/axios";
+import { BookService } from "../../services/book.service";
+import Swal from "sweetalert2";
 
 export const useBookManagement = () => {
   const [state, dispatch] = useReducer(BookManagementReducer, initialBookManagementState);
   const [inputSearchTerm, setInputSearchTerm] = useState("");
 
-  const setSearchTerm = (term: string) => {
-    dispatch({ type: "SET_SEARCH_TERM", payload: term });
-  };
-
+  // SETTERS
   const setSortConfig = (key: keyof Book) => {
     let direction: "asc" | "desc" = "asc";
     if (state.sortConfig?.key === key && state.sortConfig.direction === "asc") {
@@ -23,77 +22,106 @@ export const useBookManagement = () => {
     dispatch({ type: "SET_CURRENT_PAGE", payload: page });
   };
 
-  /* mudar // get da api */
-  const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const setBookFormModal = (type: "edit" | "add" | null, info: Book | null = null) => {
+    dispatch({ type: "SET_BOOK_FORM_MODAL", payload: { type, info } });
+  };
+
+  const setRemoveConfirmation = (visible: boolean, id: number | null = null) => {
+    dispatch({ type: "SET_REMOVE_CONFIRMATION", payload: { visible, id } });
+  };
+
+  //  HANDLERS 
+  const onInputKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const currentValue = e.currentTarget.value;
+
     if (e.key === "Enter") {
-      setSearchTerm(inputSearchTerm.trim());
+      dispatch({ type: "SET_SEARCH_TERM", payload: inputSearchTerm.trim() });
+    } else if (e.key === "Backspace" && currentValue.length === 0) {
+      dispatch({ type: "SET_SEARCH_TERM", payload: "" });
     }
   };
 
-  const setBookFormModal = (type: "edit" | "add" | null, info: Book | null = null) => {
-    dispatch({ type: "SET_BOOK_FORM_MODAL", payload: { type, info } })
-  }
+  const applyBookChange = (book: Book) => {
+    const updatedBooks = [book, ...state.books.filter(b => b.id !== book.id)];
+    dispatch({ type: "SET_BOOKS", payload: updatedBooks });
+  };
 
-  const setRemoveModal = (visible: false | true, id: number | null = null) => {
-    dispatch({ type: "SET_REMOVE_MODAL", payload: { visible, id } })
-  }
+  const removeBook = async (id: number) => {
+    try {
+      const res = await BookService.delete(id);
+      Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'The book was successfully deleted.',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      const updatedBooks = state.books.filter(book => book.id !== res.id);
+      dispatch({ type: "SET_BOOKS", payload: updatedBooks });
+      setRemoveConfirmation(false);
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Failed to delete the book.',
+      });
+    }
+  };
 
-  /* mudar aqui */
-  const handleRemove = (id: number) => {
-    console.log("remove:", id)
-  }
+  useEffect(() => {
+    const sortedBooks = state.sortConfig
+      ? [...state.books].sort((a, b) => {
+        const aVal = a[state.sortConfig!.key]?.toString().toLowerCase() ?? "";
+        const bVal = b[state.sortConfig!.key]?.toString().toLowerCase() ?? "";
+        if (aVal < bVal) return state.sortConfig!.direction === "asc" ? -1 : 1;
+        if (aVal > bVal) return state.sortConfig!.direction === "asc" ? 1 : -1;
+        return 0;
+      })
+      : state.books;
 
-  /*   useEffect(() => {
-      const sortedBooks = state.sortConfig
-        ? [...state.books].sort((a, b) => {
-          const aVal = a[state.sortConfig!.key]?.toString().toLowerCase() ?? "";
-          const bVal = b[state.sortConfig!.key]?.toString().toLowerCase() ?? "";
-          if (aVal < bVal) return state.sortConfig!.direction === "asc" ? -1 : 1;
-          if (aVal > bVal) return state.sortConfig!.direction === "asc" ? 1 : -1;
-          return 0;
-        })
-        : state.books;
-  
-      dispatch({ type: "SET_BOOKS", payload: sortedBooks });
-    }, [state.sortConfig]) */
+    dispatch({ type: "SET_BOOKS", payload: sortedBooks });
+  }, [state.sortConfig]);
 
-  /* mudar (usar do service) */
-  /*     useEffect(() => {
-        const fetchBooks = async () => {
-          try {
-            let res;
-            if (state.searchTerm.trim() === "") {
-              res = await api.get("/api/livros", {
-                params: { page: state.currentPage }
-              });
-            } else {
-              res = await api.get("/api/books/search", {
-                params: { query: state.searchTerm }
-              });
-            }
-            dispatch({ type: "SET_BOOKS", payload: res.data.books });
-          } catch (error) {
-            console.error("Error fetching books", error);
-          }
-        };
-    
-        fetchBooks();
-      }, [state.currentPage, state.searchTerm]); */
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        let books: Book[];
+        if (state.searchTerm.trim() === "") {
+          const { books: newBooks, totalPages } = await BookService.get(state.currentPage);
+          books = newBooks;
+          dispatch({ type: "SET_TOTAL_PAGES", payload: totalPages });
+        } else {
+          books = await BookService.search(state.searchTerm);
+        }
+        if (books) dispatch({ type: "SET_BOOKS", payload: books });
+      } catch (error) {
+        console.error("Error fetching books", error);
+      }
+    };
+    fetchBooks();
+  }, [state.currentPage, state.searchTerm]);
 
   return {
-    books: state.books,
-    totalPages: state.totalPages,
-    sortConfig: state.sortConfig,
-    currentPage: state.currentPage,
-    inputSearchTerm,
-    bookFormModal: state.bookFormModal,
-    removeModal: state.removeModal,
-    setInputSearchTerm,
-    setSortConfig,
-    setCurrentPage,
-    onInputKeyDown,
-    setBookFormModal,
-    setRemoveModal,
-    handleRemove
+    state: {
+      books: state.books,
+      totalPages: state.totalPages,
+      sortConfig: state.sortConfig,
+      currentPage: state.currentPage,
+      inputSearchTerm,
+      bookFormModal: state.bookFormModal,
+      removeConfirmation: state.removeConfirmation,
+    },
+    setters: {
+      setInputSearchTerm,
+      setSortConfig,
+      setCurrentPage,
+      setBookFormModal,
+      setRemoveConfirmation,
+    },
+    handlers: {
+      onInputKeyUp,
+      applyBookChange,
+      removeBook,
+    }
   };
 };
