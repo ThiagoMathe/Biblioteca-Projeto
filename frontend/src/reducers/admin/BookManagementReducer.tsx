@@ -13,7 +13,7 @@ type BookManagementStateType = {
         type: "edit" | "add" | null,
         info: Book | null,
     }
-    removeBook: {
+    removeConfirmation: {
         visible: boolean,
         id: number | null
     }
@@ -26,7 +26,7 @@ type BookAction =
     | { type: "SET_SORT_CONFIG"; payload: { key: keyof Book; direction: "asc" | "desc" } }
     | { type: "SET_CURRENT_PAGE"; payload: number }
     | { type: "SET_BOOK_FORM_MODAL"; payload: { type: "edit" | "add" | null, info: Book | null } }
-    | { type: "SET_REMOVE_BOOK"; payload: { visible: boolean, id: number | null } }
+    | { type: "SET_REMOVE_CONFIRMATION"; payload: { visible: boolean, id: number | null } }
 
 export const initialBookManagementState: BookManagementStateType = {
     books: [],
@@ -38,7 +38,7 @@ export const initialBookManagementState: BookManagementStateType = {
         type: null,
         info: null
     },
-    removeBook: {
+    removeConfirmation: {
         visible: false,
         id: null,
     }
@@ -58,8 +58,8 @@ export function BookManagementReducer(state: BookManagementStateType, action: Bo
             return { ...state, currentPage: action.payload }
         case "SET_BOOK_FORM_MODAL":
             return { ...state, bookFormModal: action.payload }
-        case "SET_REMOVE_BOOK":
-            return { ...state, removeBook: action.payload }
+        case "SET_REMOVE_CONFIRMATION":
+            return { ...state, removeConfirmation: action.payload }
         default:
             return state
     }

@@ -3,6 +3,7 @@ const router = express.Router();
 const bookService = require('../services/bookServices');
 
 router.get('/', bookService.get);
+router.get('/search', bookService.search);
 router.post('/', bookService.add);
 router.put('/:id', bookService.update);
 router.delete('/:id', bookService.delete);

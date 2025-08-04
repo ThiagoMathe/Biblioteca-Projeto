@@ -5,15 +5,11 @@ import { api } from "../../libs/axios";
 import { BookService } from "../../services/book.service";
 import Swal from "sweetalert2";
 
-
 export const useBookManagement = () => {
   const [state, dispatch] = useReducer(BookManagementReducer, initialBookManagementState);
   const [inputSearchTerm, setInputSearchTerm] = useState("");
 
-  const setSearchTerm = (term: string) => {
-    dispatch({ type: "SET_SEARCH_TERM", payload: term });
-  };
-
+  // SETTERS
   const setSortConfig = (key: keyof Book) => {
     let direction: "asc" | "desc" = "asc";
     if (state.sortConfig?.key === key && state.sortConfig.direction === "asc") {
@@ -26,22 +22,31 @@ export const useBookManagement = () => {
     dispatch({ type: "SET_CURRENT_PAGE", payload: page });
   };
 
-  /* mudar // get da api */
-  const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const setBookFormModal = (type: "edit" | "add" | null, info: Book | null = null) => {
+    dispatch({ type: "SET_BOOK_FORM_MODAL", payload: { type, info } });
+  };
+
+  const setRemoveConfirmation = (visible: boolean, id: number | null = null) => {
+    dispatch({ type: "SET_REMOVE_CONFIRMATION", payload: { visible, id } });
+  };
+
+  //  HANDLERS 
+  const onInputKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const currentValue = e.currentTarget.value;
+
     if (e.key === "Enter") {
-      setSearchTerm(inputSearchTerm.trim());
+      dispatch({ type: "SET_SEARCH_TERM", payload: inputSearchTerm.trim() });
+    } else if (e.key === "Backspace" && currentValue.length === 0) {
+      dispatch({ type: "SET_SEARCH_TERM", payload: "" });
     }
   };
 
-  const setBookFormModal = (type: "edit" | "add" | null, info: Book | null = null) => {
-    dispatch({ type: "SET_BOOK_FORM_MODAL", payload: { type, info } })
-  }
+  const applyBookChange = (book: Book) => {
+    const updatedBooks = [book, ...state.books.filter(b => b.id !== book.id)];
+    dispatch({ type: "SET_BOOKS", payload: updatedBooks });
+  };
 
-  const setRemoveBook = (visible: false | true, id: number | null = null) => {
-    dispatch({ type: "SET_REMOVE_BOOK", payload: { visible, id } })
-  }
-
-  const handleRemove = async (id: number) => {
+  const removeBook = async (id: number) => {
     try {
       const res = await BookService.delete(id);
       Swal.fire({
@@ -52,7 +57,8 @@ export const useBookManagement = () => {
         timer: 1500,
       });
       const updatedBooks = state.books.filter(book => book.id !== res.id);
-      dispatch({ type: "SET_BOOKS", payload: updatedBooks })
+      dispatch({ type: "SET_BOOKS", payload: updatedBooks });
+      setRemoveConfirmation(false);
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -60,11 +66,6 @@ export const useBookManagement = () => {
         text: 'Failed to delete the book.',
       });
     }
-  }
-
-  const applyBookChange = (book: Book) => {
-    const updatedBooks = [...state.books.filter(b => b.id !== book.id), book];
-    dispatch({ type: "SET_BOOKS", payload: updatedBooks });
   };
 
   useEffect(() => {
@@ -79,47 +80,48 @@ export const useBookManagement = () => {
       : state.books;
 
     dispatch({ type: "SET_BOOKS", payload: sortedBooks });
-  }, [state.sortConfig])
-
+  }, [state.sortConfig]);
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        let res: Book[];
+        let books: Book[];
         if (state.searchTerm.trim() === "") {
-          res = await BookService.get();
-
+          const { books: newBooks, totalPages } = await BookService.get(state.currentPage);
+          books = newBooks;
+          dispatch({ type: "SET_TOTAL_PAGES", payload: totalPages });
         } else {
-          /* mudar | criar rota do search */
-          res = await api.get("/api/books/search", {
-            params: { query: state.searchTerm }
-          });
+          books = await BookService.search(state.searchTerm);
         }
-        if (res)
-          dispatch({ type: "SET_BOOKS", payload: res });
+        if (books) dispatch({ type: "SET_BOOKS", payload: books });
       } catch (error) {
         console.error("Error fetching books", error);
       }
     };
-
     fetchBooks();
   }, [state.currentPage, state.searchTerm]);
 
   return {
-    books: state.books,
-    totalPages: state.totalPages,
-    sortConfig: state.sortConfig,
-    currentPage: state.currentPage,
-    inputSearchTerm,
-    bookFormModal: state.bookFormModal,
-    removeBook: state.removeBook,
-    setInputSearchTerm,
-    setSortConfig,
-    setCurrentPage,
-    onInputKeyDown,
-    setBookFormModal,
-    applyBookChange,
-    setRemoveBook,
-    handleRemove
+    state: {
+      books: state.books,
+      totalPages: state.totalPages,
+      sortConfig: state.sortConfig,
+      currentPage: state.currentPage,
+      inputSearchTerm,
+      bookFormModal: state.bookFormModal,
+      removeConfirmation: state.removeConfirmation,
+    },
+    setters: {
+      setInputSearchTerm,
+      setSortConfig,
+      setCurrentPage,
+      setBookFormModal,
+      setRemoveConfirmation,
+    },
+    handlers: {
+      onInputKeyUp,
+      applyBookChange,
+      removeBook,
+    }
   };
 };

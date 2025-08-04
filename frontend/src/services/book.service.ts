@@ -1,10 +1,29 @@
 import { api } from "../libs/axios";
 import { Book, BookForm } from "../models/book";
 
+type PaginatedBooksResponse = {
+    books: Book[];
+    currentPage: number;
+    totalPages: number;
+};
+
 export class BookService {
-    static async get(): Promise<Book[]> {
+    static async get(page = 1): Promise<PaginatedBooksResponse> {
         try {
-            const res = await api.get("/api/books/");
+            const res = await api.get("/api/books/", {
+                params: { page }
+            });
+            return res.data;
+        } catch (err: any) {
+            throw new Error(err.response?.data?.error || "Fetch failed");
+        }
+    }
+
+    static async search(query: string): Promise<Book[]> {
+        try {
+            const res = await api.get("/api/books/search", {
+                params: { query }
+            });
             return res.data;
         } catch (err: any) {
             throw new Error(err.response?.data?.error || "Fetch failed");
