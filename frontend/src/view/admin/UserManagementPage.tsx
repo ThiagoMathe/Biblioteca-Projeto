@@ -35,7 +35,7 @@ export default function UserManagementPage() {
     } = useUserManagement();
 
     return (
-        <main className="h-full flex-1 overflow-hidden px-12 py-9 flex flex-col gap-6">
+        <main className="h-full flex-1 overflow-hidden px-8 py-9 flex flex-col gap-6">
             <h1 className="text-3xl font-bold">Members</h1>
 
             <SearchInput

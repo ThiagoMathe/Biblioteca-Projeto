@@ -8,7 +8,8 @@ const sequelize = require('./config/database');
 const userRoutes = require('./routes/userRoutes');
 const bookRoutes = require('./routes/bookRoutes');
 const authRoutes = require('./routes/authRoutes');
-const borrowHistoryRoutes = require('./routes/borrowHistory');
+const borrowHistoryRoutes = require('./routes/borrowHistoryRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const User = require('./models/user.js');
 const Book = require('./models/book.js');
@@ -34,6 +35,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/borrow', borrowHistoryRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 sequelize.authenticate()
   .then(() => {
