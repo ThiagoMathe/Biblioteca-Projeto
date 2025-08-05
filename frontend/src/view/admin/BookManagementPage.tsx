@@ -33,7 +33,7 @@ export default function BookManagementPage() {
     } = useBookManagement();
 
     return (
-        <main className="h-full flex-1 overflow-hidden px-12 py-9 flex flex-col gap-6">
+        <main className="h-full flex-1 overflow-hidden px-8 py-9 flex flex-col gap-6">
             {bookFormModal.type != null && (
                 <BookModal modal={bookFormModal} close={() => setBookFormModal(null)} bookChange={applyBookChange} />
             )}

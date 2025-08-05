@@ -1,5 +1,4 @@
 const { Op } = require('sequelize');
-const sequelize = require('../config/database');
 const User = require('../models/user');
 
 exports.get = async (req, res) => {
@@ -34,7 +33,6 @@ exports.get = async (req, res) => {
         res.status(500).json({ error: 'Erro ao buscar usuarios' });
     }
 };
-
 
 exports.search = async (req, res) => {
     try {

@@ -19,21 +19,25 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
     set(value) {
-      // Hash da senha antes de salvar
       const hash = bcrypt.hashSync(value, 10);
       this.setDataValue('password', hash);
     }
   },
-   status: {
+  status: {
     type: DataTypes.ENUM('Active', 'Inactive'),
     allowNull: false,
     defaultValue: 'Active',
+  },
+  role: {
+    type: DataTypes.ENUM('Admin', 'User'),
+    defaultValue: 'User',
+    allowNull: false
   }
 }, {
   tableName: 'users',
   timestamps: true,
   createdAt: 'joinedDate',
-  updatedAt: false,
+  updatedAt: false
 });
 
 // Método para verificar senha

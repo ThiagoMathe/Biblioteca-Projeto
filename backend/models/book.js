@@ -2,40 +2,30 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const Book = sequelize.define('Book', {
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  author: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  genre: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
+  title: DataTypes.STRING,
+  description: DataTypes.TEXT,
+  author: DataTypes.STRING,
+  genre: DataTypes.STRING,
   format: {
     type: DataTypes.ENUM("Physic", "Digital", "Hybrid"),
     allowNull: false
   },
-  pubDate: {
-    type: DataTypes.DATEONLY,
-    allowNull: true
+  pubDate: DataTypes.DATEONLY,
+  totalCopies: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
+  availableCopies: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  imageBase64: DataTypes.STRING,
   availability: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
-  },
-  imageBase64: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
+  }
 }, {
-  tableName: 'book'
+  tableName: 'books'
 });
 
 module.exports = Book;

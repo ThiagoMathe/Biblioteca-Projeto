@@ -6,6 +6,7 @@ import AuthMiddleware from './middleware/AuthMiddleware';
 import DashBoardPage from './view/admin/DashBoardPage';
 import BookManagementPage from './view/admin/BookManagementPage';
 import UserManagementPage from './view/admin/UserManagementPage';
+import BorrowHistoryPage from './view/admin/BorrowHistoryPage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/dashboard" element={<DashBoardPage />} />
         <Route path="/book-management" element={<BookManagementPage />} />
         <Route path="/user-management" element={<UserManagementPage />} />
+        <Route path="/borrow-history" element={<BorrowHistoryPage />} />
       </Route>
     </Routes>
   )

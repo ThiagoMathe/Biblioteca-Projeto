@@ -1,5 +1,5 @@
+const { Op } = require('sequelize');
 const Book = require('../models/book');
-const sequelize = require('../config/database');
 
 exports.get = async (req, res) => {
   try {
@@ -32,11 +32,15 @@ exports.search = async (req, res) => {
     }
 
     const searchTerm = `%${query}%`;
-    /* mudar: usar op */
+
     const books = await Book.findAll({
-      where: sequelize.literal(
-        `title LIKE '${searchTerm}' OR author LIKE '${searchTerm}' OR genre LIKE '${searchTerm}'`
-      )
+      where: {
+        [Op.or]: [
+          { title: { [Op.like]: searchTerm } },
+          { author: { [Op.like]: searchTerm } },
+          { genre: { [Op.like]: searchTerm } },
+        ]
+      }
     });
 
     res.json(books);

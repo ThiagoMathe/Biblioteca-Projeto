@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 
 export type Column<T> = {
@@ -23,12 +23,11 @@ export function DataTable<T extends object>({
     data,
     renderActions,
 }: DataTableProps<T>) {
-    const [sortConfig, setSortConfig] = React.useState<SortConfig<T> | null>(
-        columns.length > 0
-            ? { key: columns[0].key, direction: "desc" }
-            : null
+    const [sortConfig, setSortConfig] = useState<SortConfig<T> | null>(
+        columns.length > 0 ? { key: columns[0].key, direction: "desc" } : null
     );
     const [sortedData, setSortedData] = useState<T[]>(data);
+    const sectionRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
         let sortableData = [...data];
@@ -57,6 +56,12 @@ export function DataTable<T extends object>({
         setSortedData(sortableData);
     }, [data, sortConfig]);
 
+    useEffect(() => {
+        if (sectionRef.current) {
+            sectionRef.current.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }, [data])
+
     const handleSort = (key: keyof T) => {
         let direction: "asc" | "desc" = "asc";
 
@@ -78,10 +83,36 @@ export function DataTable<T extends object>({
 
     return (
         <section
-            aria-label="Book table"
-            className="flex-1 overflow-auto rounded-lg border border-gray-200"
+            aria-label="table"
+            ref={sectionRef}
+            className="flex-1 overflow-auto rounded-lg sm:border sm:border-gray-200 border-0 border-transparent"
         >
-            <table className="w-full border-collapse table-auto text-sm text-left text-gray-500 flex-1 overflow-auto  border-gray-200">
+            {/* Mobile view */}
+            <div className="sm:hidden flex flex-col gap-4">
+                {sortedData.length > 0 ? (
+                    sortedData.map((row, i) => (
+                        <div key={i} className="border rounded-lg p-4 shadow-sm bg-white">
+                            {columns.map(({ key, label, render }, colIndex) => (
+                                <div key={String(key)} className="flex justify-between text-sm mb-2">
+                                    <span className="font-medium text-gray-600">{label}</span>
+                                    <span className={colIndex === 0 ? "text-gray-900 font-semibold text-base" : "text-gray-700"}>
+                                        {render ? render(row[key], row) : String(row[key])}
+                                    </span>
+                                </div>
+                            ))}
+                            {renderActions && (
+                                <div className="mt-2 text-blue-700 font-medium flex gap-2 flex-wrap">
+                                    {renderActions(row)}
+                                </div>
+                            )}
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-center text-gray-400">No data found.</p>
+                )}
+            </div>
+            {/* Desktop/tablet view */}
+            <table className="hidden sm:table w-full border-collapse table-auto text-sm text-left text-gray-500 border-gray-200">
                 <thead className="bg-gray-100 text-gray-700 font-semibold sticky top-0 z-10">
                     <tr>
                         {columns.map(({ key, label }) => (
@@ -102,17 +133,21 @@ export function DataTable<T extends object>({
                 <tbody>
                     {sortedData.length > 0 ? (
                         sortedData.map((row, i) => (
-                            <tr
-                                key={i}
-                                className="border-b border-gray-200 hover:bg-gray-50"
-                            >
-                                {columns.map(({ key, render }) => (
-                                    <td key={String(key)} className="px-4 py-3 font-semibold text-gray-900">
+                            <tr key={i} className="border-b border-gray-200 hover:bg-gray-50">
+                                {columns.map(({ key, render }, colIndex) => (
+                                    <td
+                                        key={String(key)}
+                                        className={
+                                            colIndex === 0
+                                                ? "px-4 py-4 text-[1.10rem] font-semibold text-gray-900"
+                                                : "px-4 py-4 text-[1rem] font-semibold text-gray-500"
+                                        }
+                                    >
                                         {render ? render(row[key], row) : String(row[key])}
                                     </td>
                                 ))}
                                 {renderActions && (
-                                    <td className="relative px-4 py-3 text-blue-700 font-medium flex gap-2 flex-wrap">
+                                    <td className="px-4 py-3 text-blue-700 font-medium flex gap-2 flex-wrap">
                                         {renderActions(row)}
                                     </td>
                                 )}

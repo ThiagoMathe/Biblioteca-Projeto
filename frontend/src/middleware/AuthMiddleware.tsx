@@ -14,11 +14,12 @@ const AuthMiddleware = () => {
         <div className='h-[calc(100vh-53px)] flex sm:flex-row flex-col w-full'>
             <Sidebar />
             <main className='flex-1 overflow-hidden bg-[#fafafa]'>
-                <Outlet />
+                <div className="h-full sm:overflow-hidden overflow-y-auto">
+                    <Outlet />
+                </div>
             </main>
         </div>
     )
-
 }
 
 export default AuthMiddleware
