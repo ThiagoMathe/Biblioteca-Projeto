@@ -113,16 +113,18 @@ export default function BookModal({ modal, close, bookChange }: BookModalProps) 
 
                 <form className="space-y-4 mt-7" onSubmit={handleSubmit}>
                     <div>
-                        <label className="block mb-1 font-medium">Title</label>
+                        <label htmlFor='title' className="block mb-1 font-medium">Title</label>
                         <input
+                            id='title'
                             type="text"
                             placeholder="Book title"
                             className="w-full border rounded-lg px-4 py-2"
                             value={formData.title}
                             onChange={(e) => handleChange('title', e.target.value)}
                         />
-                        <label className="block mb-1 font-medium">Description</label>
+                        <label htmlFor='description' className="block mb-1 font-medium">Description</label>
                         <textarea
+                            id='description'
                             placeholder="Book description"
                             className="w-full border rounded-lg px-4 py-2 resize-none h-20 "
                             value={formData.description}
@@ -133,8 +135,9 @@ export default function BookModal({ modal, close, bookChange }: BookModalProps) 
 
                     <div className="flex gap-4">
                         <div className="flex flex-1 flex-col">
-                            <label className="block mb-1 font-medium">Author</label>
+                            <label htmlFor='author' className="block mb-1 font-medium">Author</label>
                             <input
+                                id='author'
                                 type="text"
                                 placeholder="Author name"
                                 className="w-full border rounded-lg px-4 py-2"
@@ -144,8 +147,9 @@ export default function BookModal({ modal, close, bookChange }: BookModalProps) 
                         </div>
 
                         <div className="flex flex-1 flex-col">
-                            <label className="block mb-1 font-medium">Genre</label>
+                            <label htmlFor='genre' className="block mb-1 font-medium">Genre</label>
                             <select
+                                id='genre'
                                 className="w-full border rounded-lg px-4 py-2"
                                 value={formData.genre}
                                 onChange={(e) => handleChange('genre', e.target.value)}
@@ -163,8 +167,9 @@ export default function BookModal({ modal, close, bookChange }: BookModalProps) 
 
                     <div className="flex gap-4">
                         <div className="flex flex-1 flex-col">
-                            <label className="block mb-1 font-medium">Format</label>
+                            <label htmlFor='format' className="block mb-1 font-medium">Format</label>
                             <select
+                                id='format'
                                 className="w-full border rounded-lg px-4 py-2"
                                 value={formData.format}
                                 onChange={(e) => handleChange('format', e.target.value)}
@@ -177,8 +182,9 @@ export default function BookModal({ modal, close, bookChange }: BookModalProps) 
                         </div>
 
                         <div className="flex flex-1 flex-col">
-                            <label className="block mb-1 font-medium">Publication Date</label>
+                            <label htmlFor='pubDate' className="block mb-1 font-medium">Publication Date</label>
                             <input
+                                id='pubDate'
                                 type="date"
                                 className="w-full border rounded-lg px-4 py-2"
                                 value={formData.pubDate}
@@ -193,8 +199,9 @@ export default function BookModal({ modal, close, bookChange }: BookModalProps) 
                     <div>
                         <label className="block mb-2 font-medium">Availability</label>
                         <div className="flex gap-6">
-                            <label className="flex items-center gap-2">
+                            <label htmlFor="availability-true" className="flex items-center gap-2">
                                 <input
+                                    id='availability-true'
                                     type="radio"
                                     value="true"
                                     checked={formData.availability === true}
@@ -204,8 +211,9 @@ export default function BookModal({ modal, close, bookChange }: BookModalProps) 
                                 Available
                             </label>
 
-                            <label className="flex items-center gap-2">
+                            <label htmlFor="availability-false" className="flex items-center gap-2">
                                 <input
+                                    id='availability-false'
                                     type="radio"
                                     value="false"
                                     checked={formData.availability === false}
