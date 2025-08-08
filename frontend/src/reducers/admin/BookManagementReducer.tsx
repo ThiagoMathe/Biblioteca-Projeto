@@ -1,6 +1,6 @@
 import { Book } from "../../models/book"
 
-type BookManagementStateType = {
+export type BookManagementStateType = {
     books: Book[],
     totalPages: number,
     currentPage: number,
@@ -15,7 +15,7 @@ type BookManagementStateType = {
     }
 }
 
-type BookAction =
+export type BookAction =
     | { type: "SET_BOOKS"; payload: Book[] }
     | { type: "SET_TOTAL_PAGES"; payload: number }
     | { type: "SET_CURRENT_PAGE"; payload: number }
